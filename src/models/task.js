@@ -14,6 +14,8 @@ const Task = mongoose.model('Task', {
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    //Para relacionar dos modelos
+    ref: 'User',
   },
 });
 

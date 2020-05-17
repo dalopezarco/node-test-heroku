@@ -53,6 +53,13 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+//En lugar de crear un array de tasks hacemos referencia a las tasks que son otro modelo
+userSchema.virtual('tasks', {
+  ref: 'Task',
+  localField: '_id',
+  foreignField: 'ownerId',
+});
+
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
   const token = jwt.sign({_id: user.id.toString()}, 'danielillo');

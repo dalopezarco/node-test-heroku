@@ -16,24 +16,23 @@ router.post('/', auth, async (req, res, next) => {
   }
 });
 
-router.get('/', function(req, res, next) {
-  Task.find({}).then(result => {
-    res.send(result);
-  }).catch(err => {
-    res.send(err);
-  });
+router.get('/', auth, async (req, res, next) => {
+  try {
+    await req.user.populate('tasks').execPopulate();
+    res.send(req.user.tasks);
+  } catch (e) {
+    res.status(400).send();
+  }
 });
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', auth, async (req, res, next) => {
   const id = req.params.id;
-  Task.findById(id).then(result => {
-    if (result) {
-      res.send(result);
-    }
-    res.status(404).send();
-  }).catch(err => {
-    res.status(500).send(err);
-  });
+  try {
+    const task = await Task.findOne({_id: id, ownerId: req.user._id});
+    res.send(task);
+  } catch (e) {
+    res.status(400).send();
+  }
 });
 
 router.patch('/:id', async (req, res, next) => {
